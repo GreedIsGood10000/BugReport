@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190310121617_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190310121617_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190310123705_InitialCreate2.cs" />
+    <Compile Remove="Migrations\20190310123705_InitialCreate2.Designer.cs" />
+    <Compile Remove="Migrations\20190310133934_InitialCreate2.cs" />
+    <Compile Remove="Migrations\20190310133934_InitialCreate2.Designer.cs" />
+    <Compile Remove="Migrations\20190312140414_InitialCreate2.cs" />
+    <Compile Remove="Migrations\20190312140414_InitialCreate2.Designer.cs" />
+    <Compile Remove="Migrations\20190312141930_InitialCreate2.cs" />
+    <Compile Remove="Migrations\20190312141930_InitialCreate2.Designer.cs" />
+    <Compile Remove="Migrations\20190312142553_InitialCreate2.cs" />
+    <Compile Remove="Migrations\20190312142553_InitialCreate2.Designer.cs" />
+    <Compile Remove="Migrations\20190312142755_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190312142755_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190312142851_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190312142851_InitialCreate.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.15" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="7.6.0" />
+  </ItemGroup>
+
+</Project>
