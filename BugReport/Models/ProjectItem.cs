@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BugReport.Models
 {
@@ -9,8 +8,7 @@ namespace BugReport.Models
     {
         public const int ProjectItemNameLenght = 50;
         public const int ProjectItemDescriptionLenght = 500;
-
-       // [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public int ID { get; set; }
 
         [StringLength(ProjectItemNameLenght)]

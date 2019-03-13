@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BugReport.Models
 {
@@ -18,8 +17,7 @@ namespace BugReport.Models
         {
             Low, Medium, High
         }
-
-     //   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public int ID { get; set; }
 
         public int ProjectID { get; set; }

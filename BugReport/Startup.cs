@@ -20,12 +20,10 @@ namespace BugReport
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-          //  string connection = @"Server=KOMP777\SQLEXPRESS;Database=BugTracker;Trusted_Connection=True;ConnectRetryCount=0";
             string connection = Configuration.GetConnectionString("db");
-          //  string connection = @"server=localhost;Database=myDataBase;user=root;password=Passw0rd;";
             services.AddDbContext<BugTrackerContext>
                 (options => options.UseMySQL(connection));
-              //  (options => options.UseInMemoryDatabase(connection));
+           //     (options => options.UseInMemoryDatabase(connection));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

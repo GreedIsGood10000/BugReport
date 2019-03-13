@@ -23,9 +23,16 @@ namespace BugReport.Controllers
         {
             _repository = new ProjectRepository(context);
 
-            _repository.CreateInitialElementsIfNotExist();
+            //начальное заполнение данными
+            // _repository.CreateInitialElementsIfNotExist();
         }
 
+        /// <summary>
+        /// Чтение всех записей
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult<IEnumerable<ProjectItem>> ReadItems(
             [FromQuery] int page = DefaultPageNumber,
@@ -42,6 +49,11 @@ namespace BugReport.Controllers
             }
         }
 
+        /// <summary>
+        /// Чтение записи по ид
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<ProjectItem> ReadItem(int id)
         {
@@ -61,6 +73,11 @@ namespace BugReport.Controllers
             }
         }
 
+        /// <summary>
+        /// Создание записи
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult<ProjectItem> CreateItem(CreateProjectItemCommand command)
         {
@@ -77,6 +94,12 @@ namespace BugReport.Controllers
             }
         }
 
+        /// <summary>
+        /// Обновление записи
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public ActionResult UpdateItem(int id, UpdateProjectItemCommand item)
         {
@@ -93,6 +116,12 @@ namespace BugReport.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// Удаление записи
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult RemoveItem(int id)
         {
@@ -101,7 +130,6 @@ namespace BugReport.Controllers
                 ProjectItem item = _repository.GetItem(id);
 
                 if (item == null)
-                    //todo посмотреть, в каком виде можно вернуть ошибку
                     return NotFound();
 
                 _repository.DeleteItem(id);

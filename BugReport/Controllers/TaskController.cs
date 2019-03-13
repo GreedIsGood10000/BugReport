@@ -23,9 +23,22 @@ namespace BugReport.Controllers
         {
             _taskRepository = new TaskRepository(context);
 
-            _taskRepository.CreateInitialElementsIfNotExist();
+            //начальное заполнение данными
+          //  _taskRepository.CreateInitialElementsIfNotExist();
         }
 
+        /// <summary>
+        /// Чтение записей с фильтрацией
+        /// </summary>
+        /// <param name="sortOrder"></param>
+        /// <param name="projectId"></param>
+        /// <param name="dateFrom"></param>
+        /// <param name="dateTo"></param>
+        /// <param name="status"></param>
+        /// <param name="priority"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult<IEnumerable<TaskItem>> ReadItems(
             [FromQuery] string sortOrder, 
@@ -50,6 +63,11 @@ namespace BugReport.Controllers
             }
         }
 
+        /// <summary>
+        /// Чтение записи по ид
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public ActionResult<TaskItem> ReadItem(int id)
         {
@@ -69,6 +87,11 @@ namespace BugReport.Controllers
             }
         }
 
+        /// <summary>
+        /// Создание записи
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult<TaskItem> CreateItem(CreateTaskItemCommand item)
         {
@@ -76,8 +99,6 @@ namespace BugReport.Controllers
             {
                 TaskItem taskItem = _taskRepository.CreateItem(item);
 
-                //todo получается, метод будет стучаться до readItem?? проверить на отладчике
-                //todo почему подчеркивает nameof(ReadItem)?
                 return CreatedAtAction(nameof(ReadItem), new { id = taskItem.ID }, taskItem);
             }
             catch (Exception e)
@@ -86,16 +107,20 @@ namespace BugReport.Controllers
                 return BadRequest();
             }
         }
-
-        //todo откуда метод берёт TaskItem? попробовать подставить этот параметр в другой метод
+        
+        /// <summary>
+        /// Обновление записи
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public ActionResult UpdateItem(int id, UpdateTaskItemCommand item)
         {
             try
             {
                 _taskRepository.UpdateItem(id, item);
-
-                //todo узнать, получается, коды ответа в бразуер возращаются либо стандартыне при возврате значения, либо кастомные с помощью методов?
+                
                 return NoContent();
             }
             catch (Exception e)
@@ -105,6 +130,11 @@ namespace BugReport.Controllers
             }
         }
 
+        /// <summary>
+        /// Удаление записи
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public ActionResult DeleteItem(int id)
         {
