@@ -12,12 +12,10 @@ namespace BugReport.Repositories
     public class TaskRepository : ITaskRepository
     {
         private readonly BugTrackerContext _context;
-        private readonly DbSet<TaskItem> _taskItemsList;
 
         public TaskRepository(BugTrackerContext context)
         {
             _context = context;
-            _taskItemsList = context.TaskItems;
         }
 
         public async Task<List<TaskItem>> GetTaskItems(string sortOrder,

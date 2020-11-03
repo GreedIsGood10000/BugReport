@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
@@ -12,12 +11,10 @@ namespace BugReport.Repositories
     public class ProjectRepository : IProjectRepository
     {
         private readonly BugTrackerContext _context;
-        private readonly DbSet<ProjectItem> _projectItemsList;
 
         public ProjectRepository(BugTrackerContext context)
         {
             _context = context;
-            _projectItemsList = context.ProjectItems;
         }
 
         public async Task<IEnumerable<ProjectItem>> GetProjectItems(int page, int pageSize)
@@ -43,7 +40,7 @@ namespace BugReport.Repositories
                 Name = command.Name,
             };
 
-            _projectItemsList.Add(projectItem);
+            _context.ProjectItems.Add(projectItem);
 
             await _context.SaveChangesAsync();
 
