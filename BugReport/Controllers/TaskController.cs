@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
 using BugReport.Repositories;
@@ -24,7 +25,7 @@ namespace BugReport.Controllers
             _taskRepository = new TaskRepository(context);
 
             //начальное заполнение данными
-          //  _taskRepository.CreateInitialElementsIfNotExist();
+            _taskRepository.CreateInitialElementsIfNotExist();
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace BugReport.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<IEnumerable<TaskItem>> ReadItems(
+        public async Task<ActionResult<IEnumerable<TaskItem>>> ReadItems(
             [FromQuery] string sortOrder, 
             [FromQuery] int[] projectId,
             [FromQuery] DateTime? dateFrom,
@@ -53,7 +54,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                return _taskRepository.GetTaskItems(sortOrder, projectId, dateFrom, dateTo, status, priority, page,
+                return await _taskRepository.GetTaskItems(sortOrder, projectId, dateFrom, dateTo, status, priority, page,
                 pageSize);
             }
             catch (Exception e)
@@ -69,11 +70,11 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<TaskItem> ReadItem(int id)
+        public async Task<ActionResult<TaskItem>> ReadItem(int id)
         {
             try
             {
-                TaskItem result = _taskRepository.GetItem(id);
+                TaskItem result = await _taskRepository.GetItem(id);
 
                 if (result == null)
                     return NotFound();
@@ -93,13 +94,11 @@ namespace BugReport.Controllers
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<TaskItem> CreateItem(CreateTaskItemCommand item)
+        public async Task<ActionResult<TaskItem>> CreateItem(CreateTaskItemCommand item)
         {
             try
             {
-                TaskItem taskItem = _taskRepository.CreateItem(item);
-
-                return CreatedAtAction(nameof(ReadItem), new { id = taskItem.ID }, taskItem);
+                return await _taskRepository.CreateItem(item);
             }
             catch (Exception e)
             {
@@ -115,11 +114,11 @@ namespace BugReport.Controllers
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult UpdateItem(int id, UpdateTaskItemCommand item)
+        public async Task<ActionResult> UpdateItem(int id, UpdateTaskItemCommand item)
         {
             try
             {
-                _taskRepository.UpdateItem(id, item);
+                await _taskRepository.UpdateItem(id, item);
                 
                 return NoContent();
             }
@@ -136,16 +135,11 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult DeleteItem(int id)
+        public async Task<ActionResult> DeleteItem(int id)
         {
             try
             {
-                TaskItem item = _taskRepository.GetItem(id);
-
-                if (item == null)
-                    return NotFound();
-
-                _taskRepository.DeleteItem(id);
+                await _taskRepository.DeleteItem(id);
 
                 return NoContent();
             }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ namespace BugReport.Repositories
             _taskItemsList = context.TaskItems;
         }
 
-        public List<TaskItem> GetTaskItems(string sortOrder,
+        public async Task<List<TaskItem>> GetTaskItems(string sortOrder,
             int[] projectId,
             DateTime? dateFrom,
             DateTime? dateTo,
@@ -66,15 +67,17 @@ namespace BugReport.Repositories
             }
 
             //используется пакет X.PagedList.Mvc.Core
-            return items.ToPagedList(page, pageSize).ToList();
+            var itemsPagedList = await items.ToPagedListAsync(page, pageSize);
+
+            return await itemsPagedList.ToListAsync();
         }
 
-        public TaskItem GetItem(int id)
+        public Task<TaskItem> GetItem(int id)
         {
-            return _context.TaskItems.Find(id);
+            return _context.TaskItems.FindAsync(id);
         }
 
-        public TaskItem CreateItem(CreateTaskItemCommand command)
+        public async Task<TaskItem> CreateItem(CreateTaskItemCommand command)
         {
             TaskItem taskItem = new TaskItem
             {
@@ -89,14 +92,14 @@ namespace BugReport.Repositories
 
             _context.TaskItems.Add(taskItem);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return taskItem;
         }
 
-        public TaskItem UpdateItem(int id, UpdateTaskItemCommand command)
+        public async Task<TaskItem> UpdateItem(int id, UpdateTaskItemCommand command)
         {
-            TaskItem existingItem = _context.TaskItems.Find(id);
+            TaskItem existingItem = await _context.TaskItems.FindAsync(id);
 
             if (existingItem.Status == TaskItem.TaskStatus.Closed)
                 throw new InvalidOperationException("cannot change task in this status");
@@ -106,25 +109,25 @@ namespace BugReport.Repositories
             existingItem.Status = command.Status;
             existingItem.Description = command.Description;
             existingItem.Name = command.Name;
-
             existingItem.Modified = DateTime.UtcNow;
 
             _context.TaskItems.Add(existingItem);
-            
             _context.Entry(existingItem).State = EntityState.Modified;
-
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return existingItem;
         }
 
-        public void DeleteItem(int id)
+        public async Task DeleteItem(int id)
         {
-            TaskItem item = _context.TaskItems.Find(id);
+            TaskItem item = await _context.TaskItems.FindAsync(id);
+
+            if (item == null)
+                return;
 
             _context.TaskItems.Remove(item);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
@@ -132,7 +135,7 @@ namespace BugReport.Repositories
         /// </summary>
         public void CreateInitialElementsIfNotExist()
         {
-            if (_taskItemsList.Count() == 0)
+            if (!_taskItemsList.Any())
             {
                 _taskItemsList.Add(new TaskItem { Name = "Task 1", Description = "Task 1", Priority = TaskItem.TaskPriority.High, Created = DateTime.Now.AddDays(1), Modified = DateTime.UtcNow.AddDays(1) });
                 _taskItemsList.Add(new TaskItem { Name = "Task 2", Description = "Task 2", Priority = TaskItem.TaskPriority.Low, Created = DateTime.Now.AddDays(-1), Modified = DateTime.UtcNow.AddDays(-1) });

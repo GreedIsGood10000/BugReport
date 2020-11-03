@@ -22,8 +22,8 @@ namespace BugReport
         {
             string connection = Configuration.GetConnectionString("db");
             services.AddDbContext<BugTrackerContext>
-                (options => options.UseMySQL(connection));
-           //     (options => options.UseInMemoryDatabase(connection));
+       //         (options => options.UseMySQL(connection));
+                (options => options.UseInMemoryDatabase(connection));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

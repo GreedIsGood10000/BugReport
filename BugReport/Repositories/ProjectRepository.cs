@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,22 +20,22 @@ namespace BugReport.Repositories
             _projectItemsList = context.ProjectItems;
         }
 
-        public List<ProjectItem> GetProjectItems(
+        public async Task<IEnumerable<ProjectItem>> GetProjectItems(
             int page,
             int pageSize)
         {
-            IEnumerable<ProjectItem> items = _context.ProjectItems;
-
             //используется пакет X.PagedList.Mvc.Core
-            return items.ToPagedList(page, pageSize).ToList();
+            var pagedList = await _context.ProjectItems.ToPagedListAsync(page, pageSize);
+
+            return await pagedList.ToListAsync();
         }
 
-        public ProjectItem GetItem(int id)
+        public Task<ProjectItem> GetItem(int id)
         {
-            return _context.ProjectItems.Find(id);
+            return _context.ProjectItems.FindAsync(id);
         }
 
-        public ProjectItem CreateItem(CreateProjectItemCommand command)
+        public async Task<ProjectItem> CreateItem(CreateProjectItemCommand command)
         {
             ProjectItem projectItem = new ProjectItem
             {
@@ -46,14 +47,14 @@ namespace BugReport.Repositories
 
             _projectItemsList.Add(projectItem);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return projectItem;
         }
 
-        public ProjectItem UpdateItem(int id, UpdateProjectItemCommand command)
+        public async Task<ProjectItem> UpdateItem(int id, UpdateProjectItemCommand command)
         {
-            ProjectItem existingItem = _context.ProjectItems.Find(id);
+            ProjectItem existingItem = await _context.ProjectItems.FindAsync(id);
 
             existingItem.Name = command.Name;
             existingItem.Description = command.Description;
@@ -64,32 +65,39 @@ namespace BugReport.Repositories
             
             _context.Entry(existingItem).State = EntityState.Modified;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return existingItem;
         }
 
-        public void DeleteItem(int id)
+        public async Task DeleteItem(int id)
         {
-            ProjectItem item = _context.ProjectItems.Find(id);
+            ProjectItem item = await _context.ProjectItems.FindAsync(id);
+
+            if (item == null)
+            {
+                return;
+            }
 
             _context.ProjectItems.Remove(item);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
         /// Начальная инициализация элементов
         /// </summary>
-        public void CreateInitialElementsIfNotExist()
+        public Task CreateInitialElementsIfNotExist()
         {
-            if (_projectItemsList.Count() == 0)
+            if (!_projectItemsList.Any())
             {
                 _projectItemsList.Add(new ProjectItem { Name = "Task 1", Description = "Task 1", Created = DateTime.UtcNow.AddDays(1), Modified = DateTime.UtcNow.AddDays(1) });
                 _projectItemsList.Add(new ProjectItem { Name = "Task 2", Description = "Task 2", Created = DateTime.UtcNow.AddDays(-1), Modified = DateTime.UtcNow.AddDays(-1) });
                 _projectItemsList.Add(new ProjectItem { Name = "Task 3", Description = "Task 3", Created = DateTime.UtcNow.AddDays(2), Modified = DateTime.UtcNow.AddDays(2) });
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
             }
+
+            return Task.CompletedTask;
         }
     }
 }

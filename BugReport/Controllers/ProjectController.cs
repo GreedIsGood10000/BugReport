@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
 using BugReport.Repositories;
@@ -24,7 +25,7 @@ namespace BugReport.Controllers
             _repository = new ProjectRepository(context);
 
             //начальное заполнение данными
-            // _repository.CreateInitialElementsIfNotExist();
+            _repository.CreateInitialElementsIfNotExist();
         }
 
         /// <summary>
@@ -34,13 +35,14 @@ namespace BugReport.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult<IEnumerable<ProjectItem>> ReadItems(
+        public async Task<ActionResult<IEnumerable<ProjectItem>>> ReadItems(
             [FromQuery] int page = DefaultPageNumber,
             [FromQuery] [Range(MinPageSize, MaxPageSize)] int pageSize = DefaultPageSize)
         {
             try
             {
-                return _repository.GetProjectItems(page, pageSize);
+                var e = await _repository.GetProjectItems(page, pageSize);
+                return Ok(e);
             }
             catch (Exception e)
             {
@@ -55,11 +57,11 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public ActionResult<ProjectItem> ReadItem(int id)
+        public async Task<ActionResult<ProjectItem>> ReadItem(int id)
         {
             try
             {
-                ProjectItem result = _repository.GetItem(id);
+                ProjectItem result = await _repository.GetItem(id);
 
                 if (result == null)
                     return NotFound();
@@ -79,13 +81,13 @@ namespace BugReport.Controllers
         /// <param name="command"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult<ProjectItem> CreateItem(CreateProjectItemCommand command)
+        public async Task<ActionResult<ProjectItem>> CreateItem(CreateProjectItemCommand command)
         {
             try
             {
-                ProjectItem projectItem = _repository.CreateItem(command);
+                ProjectItem projectItem = await _repository.CreateItem(command);
 
-                return CreatedAtAction(nameof(ReadItem), new {id = projectItem.ID}, projectItem);
+                return projectItem;
             }
             catch (Exception e)
             {
@@ -101,11 +103,11 @@ namespace BugReport.Controllers
         /// <param name="item"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public ActionResult UpdateItem(int id, UpdateProjectItemCommand item)
+        public async Task<ActionResult> UpdateItem(int id, UpdateProjectItemCommand item)
         {
             try
             {
-                _repository.UpdateItem(id, item);
+                await _repository.UpdateItem(id, item);
             }
             catch (Exception e)
             {
@@ -123,16 +125,11 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public ActionResult RemoveItem(int id)
+        public async Task<ActionResult> RemoveItem(int id)
         {
             try
             {
-                ProjectItem item = _repository.GetItem(id);
-
-                if (item == null)
-                    return NotFound();
-
-                _repository.DeleteItem(id);
+                await _repository.DeleteItem(id);
 
                 return NoContent();
             }
