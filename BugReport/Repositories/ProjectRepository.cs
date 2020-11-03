@@ -83,17 +83,5 @@ namespace BugReport.Repositories
 
             await _context.SaveChangesAsync();
         }
-
-        /// <summary>
-        /// Начальная инициализация элементов
-        /// </summary>
-        public Task CreateInitialElementsIfNotExist()
-        {
-            if (!_projectItemsList.Any())
-            {
-            }
-
-            return Task.CompletedTask;
-        }
     }
 }
