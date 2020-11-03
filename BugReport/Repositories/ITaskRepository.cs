@@ -24,7 +24,5 @@ namespace BugReport.Repositories
         Task<TaskItem> UpdateItem(int id, UpdateTaskItemCommand command);
 
         Task DeleteItem(int id);
-
-        void CreateInitialElementsIfNotExist();
     }
 }
