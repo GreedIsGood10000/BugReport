@@ -9,7 +9,7 @@ using X.PagedList;
 
 namespace BugReport.Repositories
 {
-    public class TaskRepository
+    public class TaskRepository : ITaskRepository
     {
         private readonly BugTrackerContext _context;
         private readonly DbSet<TaskItem> _taskItemsList;
@@ -137,9 +137,6 @@ namespace BugReport.Repositories
         {
             if (!_taskItemsList.Any())
             {
-                _taskItemsList.Add(new TaskItem { Name = "Task 1", Description = "Task 1", Priority = TaskItem.TaskPriority.High, Created = DateTime.Now.AddDays(1), Modified = DateTime.UtcNow.AddDays(1) });
-                _taskItemsList.Add(new TaskItem { Name = "Task 2", Description = "Task 2", Priority = TaskItem.TaskPriority.Low, Created = DateTime.Now.AddDays(-1), Modified = DateTime.UtcNow.AddDays(-1) });
-                _taskItemsList.Add(new TaskItem { Name = "Task 3", Description = "Task 3", Priority = TaskItem.TaskPriority.Medium, Created = DateTime.Now.AddDays(2), Modified = DateTime.UtcNow.AddDays(2) });
                 _context.SaveChanges();
             }
         }

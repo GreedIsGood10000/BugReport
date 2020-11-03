@@ -18,14 +18,11 @@ namespace BugReport.Controllers
         private const int MinPageSize = 1;
         private const int MaxPageSize = 100;
 
-        private readonly ProjectRepository _repository;
+        private readonly IProjectRepository _projectRepository;
 
-        public ProjectController(BugTrackerContext context)
+        public ProjectController(IProjectRepository projectProjectRepository)
         {
-            _repository = new ProjectRepository(context);
-
-            //начальное заполнение данными
-            _repository.CreateInitialElementsIfNotExist();
+            _projectRepository = projectProjectRepository;
         }
 
         /// <summary>
@@ -41,7 +38,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                var e = await _repository.GetProjectItems(page, pageSize);
+                var e = await _projectRepository.GetProjectItems(page, pageSize);
                 return Ok(e);
             }
             catch (Exception e)
@@ -61,7 +58,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                ProjectItem result = await _repository.GetItem(id);
+                ProjectItem result = await _projectRepository.GetItem(id);
 
                 if (result == null)
                     return NotFound();
@@ -85,7 +82,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                ProjectItem projectItem = await _repository.CreateItem(command);
+                ProjectItem projectItem = await _projectRepository.CreateItem(command);
 
                 return projectItem;
             }
@@ -107,7 +104,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                await _repository.UpdateItem(id, item);
+                await _projectRepository.UpdateItem(id, item);
             }
             catch (Exception e)
             {
@@ -129,7 +126,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                await _repository.DeleteItem(id);
+                await _projectRepository.DeleteItem(id);
 
                 return NoContent();
             }

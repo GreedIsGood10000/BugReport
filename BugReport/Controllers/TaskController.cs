@@ -18,14 +18,11 @@ namespace BugReport.Controllers
         private const int MinPageSize = 1;
         private const int MaxPageSize = 100;
 
-        private readonly TaskRepository _taskRepository;
+        private readonly ITaskRepository _taskRepository;
 
-        public TaskController(BugTrackerContext context)
+        public TaskController(ITaskRepository taskRepository)
         {
-            _taskRepository = new TaskRepository(context);
-
-            //начальное заполнение данными
-            _taskRepository.CreateInitialElementsIfNotExist();
+            _taskRepository = taskRepository;
         }
 
         /// <summary>
