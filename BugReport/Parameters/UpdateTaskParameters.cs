@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BugReport.Models;
 
-namespace BugReport.Commands
+namespace BugReport.Parameters
 {
-    public class UpdateTaskItemCommand
+    public class UpdateTaskParameters
     {
-        public int Id { get; set; }
-
         public int ProjectId { get; set; }
 
         [StringLength(TaskItem.TaskItemNameLenght)]

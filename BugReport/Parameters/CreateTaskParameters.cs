@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BugReport.Models;
 
-namespace BugReport.Commands
+namespace BugReport.Parameters
 {
-    public class UpdateTaskItemCommand
+    public class CreateTaskParameters
     {
-        public int Id { get; set; }
-
         public int ProjectId { get; set; }
-
+   
         [StringLength(TaskItem.TaskItemNameLenght)]
         public string Name { get; set; }
 
@@ -16,7 +14,5 @@ namespace BugReport.Commands
         public string Description { get; set; }
 
         public TaskItem.TaskPriority Priority { get; set; }
-
-        public TaskItem.TaskStatus Status { get; set; }
     }
 }

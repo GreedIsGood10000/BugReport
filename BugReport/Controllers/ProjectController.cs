@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
+using BugReport.Parameters;
 using BugReport.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,12 @@ namespace BugReport.Controllers
     [ApiController]
     public class ProjectController : ControllerBase
     {
-        private const int DefaultPageSize = 30;
-        private const int DefaultPageNumber = 1;
-        private const int MinPageSize = 1;
-        private const int MaxPageSize = 100;
+        private const int DEFAULT_PAGE_SIZE = 30;
+        private const int DEFAULT_PAGE = 1;
+        private const int MIN_PAGE = 0;
+        private const int MAX_PAGE = int.MaxValue;
+        private const int MIN_PAGE_SIZE = 1;
+        private const int MAX_PAGE_SIZE = 100;
 
         private readonly IProjectRepository _projectRepository;
 
@@ -33,13 +36,20 @@ namespace BugReport.Controllers
         /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectItem>>> ReadItems(
-            [FromQuery] int page = DefaultPageNumber,
-            [FromQuery] [Range(MinPageSize, MaxPageSize)] int pageSize = DefaultPageSize)
+            [FromQuery(Name = "page")] [Range(MIN_PAGE, MAX_PAGE)] int page = DEFAULT_PAGE,
+            [FromQuery(Name = "pagesize")][Range(MIN_PAGE_SIZE, MAX_PAGE_SIZE)] int pageSize = DEFAULT_PAGE_SIZE)
         {
             try
             {
-                var e = await _projectRepository.GetProjectItems(page, pageSize);
-                return Ok(e);
+                var readTasksCommand = new ReadTasksCommand
+                {
+                    Page = page,
+                    PageSize = pageSize
+                };
+
+                var item = await _projectRepository.GetProjectItems(readTasksCommand);
+
+                return Ok(item);
             }
             catch (Exception e)
             {
@@ -54,7 +64,7 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProjectItem>> ReadItem(int id)
+        public async Task<ActionResult<ProjectItem>> ReadItem([FromRoute] int id)
         {
             try
             {
@@ -75,13 +85,19 @@ namespace BugReport.Controllers
         /// <summary>
         /// Создание записи
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<ProjectItem>> CreateItem(CreateProjectItemCommand command)
+        public async Task<ActionResult<ProjectItem>> CreateItem([FromBody] CreateProjectParameters parameters)
         {
             try
             {
+                var command = new CreateProjectItemCommand
+                {
+                    Name = parameters.Name,
+                    Description = parameters.Description
+                };
+
                 ProjectItem projectItem = await _projectRepository.CreateItem(command);
 
                 return projectItem;
@@ -97,22 +113,29 @@ namespace BugReport.Controllers
         /// Обновление записи
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="item"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateItem(int id, UpdateProjectItemCommand item)
+        public async Task<ActionResult<ProjectItem>> UpdateItem(
+            [FromRoute(Name = "id")] [Range(0, int.MaxValue)] int id,
+            [FromBody] UpdateProjectParameters parameters)
         {
             try
             {
-                await _projectRepository.UpdateItem(id, item);
+                var command = new UpdateProjectItemCommand
+                {
+                    Id = id,
+                    Name = parameters.Name,
+                    Description = parameters.Description
+                };
+
+                return await _projectRepository.UpdateItem(command);
             }
             catch (Exception e)
             {
                 //Logger.Log(e);
                 return BadRequest();
             }
-
-            return NoContent();
         }
 
 
@@ -122,7 +145,7 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        public async Task<ActionResult> RemoveItem(int id)
+        public async Task<ActionResult> RemoveItem([FromRoute] int id)
         {
             try
             {

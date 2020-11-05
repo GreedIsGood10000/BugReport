@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
+using BugReport.Parameters;
 using BugReport.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +14,10 @@ namespace BugReport.Controllers
     [ApiController]
     public class TaskController : ControllerBase
     {
-        private const int DefaultPageSize = 30;
-        private const int DefaultPageNumber = 1;
-        private const int MinPageSize = 1;
-        private const int MaxPageSize = 100;
+        private const int DEFAULT_PAGE_SIZE = 30;
+        private const int DEFAULT_PDAGE_NUMBER = 1;
+        private const int MIN_PAGE_SIZE = 1;
+        private const int MAX_PAGE_SIZE = 100;
 
         private readonly ITaskRepository _taskRepository;
 
@@ -39,14 +40,14 @@ namespace BugReport.Controllers
         /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskItem>>> ReadItems(
-            [FromQuery] string sortOrder, 
-            [FromQuery] int[] projectId,
-            [FromQuery] DateTime? dateFrom,
-            [FromQuery] DateTime? dateTo,
-            [FromQuery] TaskItem.TaskStatus[] status,
-            [FromQuery] TaskItem.TaskPriority[] priority,
-            [FromQuery] int page = DefaultPageNumber,
-            [FromQuery] [Range(MinPageSize, MaxPageSize)] int pageSize = DefaultPageSize
+            [FromQuery(Name = "sortorder")] string sortOrder, 
+            [FromQuery(Name = "projectid")] int[] projectId,
+            [FromQuery(Name = "datefrom")] DateTime? dateFrom,
+            [FromQuery(Name = "dateto")] DateTime? dateTo,
+            [FromQuery(Name = "status")] TaskItem.TaskStatus[] status,
+            [FromQuery(Name = "priority")] TaskItem.TaskPriority[] priority,
+            [FromQuery(Name = "page")] int page = DEFAULT_PDAGE_NUMBER,
+            [FromQuery(Name = "pagesize")] [Range(MIN_PAGE_SIZE, MAX_PAGE_SIZE)] int pageSize = DEFAULT_PAGE_SIZE
             )
         {
             try
@@ -88,14 +89,22 @@ namespace BugReport.Controllers
         /// <summary>
         /// Создание записи
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<TaskItem>> CreateItem(CreateTaskItemCommand item)
+        public async Task<ActionResult<TaskItem>> CreateItem([FromBody] CreateTaskParameters parameters)
         {
             try
             {
-                return await _taskRepository.CreateItem(item);
+                var command = new CreateTaskItemCommand
+                {
+                    Name = parameters.Name,
+                    Description = parameters.Description,
+                    Priority = parameters.Priority,
+                    ProjectID = parameters.ProjectId
+                };
+
+                return await _taskRepository.CreateItem(command);
             }
             catch (Exception e)
             {
@@ -103,21 +112,31 @@ namespace BugReport.Controllers
                 return BadRequest();
             }
         }
-        
+
         /// <summary>
         /// Обновление записи
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="item"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateItem(int id, UpdateTaskItemCommand item)
+        public async Task<ActionResult<TaskItem>> UpdateItem(
+            [FromRoute] int id,
+            [FromBody] UpdateTaskParameters parameters)
         {
             try
             {
-                await _taskRepository.UpdateItem(id, item);
-                
-                return NoContent();
+                var command = new UpdateTaskItemCommand
+                {  
+                    Id = id,
+                    Name = parameters.Name,
+                    Description = parameters.Description,
+                    Priority = parameters.Priority,
+                    ProjectId = parameters.ProjectId,
+                    Status = parameters.Status
+                };
+
+                return await _taskRepository.UpdateItem(command);
             }
             catch (Exception e)
             {

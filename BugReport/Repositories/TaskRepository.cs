@@ -95,16 +95,16 @@ namespace BugReport.Repositories
             return taskItem;
         }
 
-        public async Task<TaskItem> UpdateItem(int id, UpdateTaskItemCommand command)
+        public async Task<TaskItem> UpdateItem(UpdateTaskItemCommand command)
         {
-            TaskItem existingItem = await _context.TaskItems.FindAsync(id);
+            TaskItem existingItem = await _context.TaskItems.FindAsync(command.Id);
             if (existingItem == null)
-                throw new ArgumentOutOfRangeException(nameof(id));
+                throw new ArgumentOutOfRangeException(nameof(command.Id));
 
             if (existingItem.Status == TaskItem.TaskStatus.Closed)
                 throw new InvalidOperationException("cannot change task in this status");
 
-            existingItem.ProjectID = command.ProjectID;
+            existingItem.ProjectID = command.ProjectId;
             existingItem.Priority = command.Priority;
             existingItem.Status = command.Status;
             existingItem.Description = command.Description;

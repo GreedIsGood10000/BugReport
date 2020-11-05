@@ -53,7 +53,7 @@ namespace BugReport.Migrations
 
                     b.Property<int>("Priority");
 
-                    b.Property<int>("ProjectID");
+                    b.Property<int>("ProjectId");
 
                     b.Property<int?>("ProjectItemID");
 

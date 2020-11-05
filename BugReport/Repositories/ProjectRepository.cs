@@ -17,10 +17,10 @@ namespace BugReport.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ProjectItem>> GetProjectItems(int page, int pageSize)
+        public async Task<IEnumerable<ProjectItem>> GetProjectItems(ReadTasksCommand readTasksCommand)
         {
             //используется пакет X.PagedList.Mvc.Core
-            var pagedList = await _context.ProjectItems.ToPagedListAsync(page, pageSize);
+            var pagedList = await _context.ProjectItems.ToPagedListAsync(readTasksCommand.Page, readTasksCommand.PageSize);
 
             return await pagedList.ToListAsync();
         }
@@ -47,11 +47,11 @@ namespace BugReport.Repositories
             return projectItem;
         }
 
-        public async Task<ProjectItem> UpdateItem(int id, UpdateProjectItemCommand command)
+        public async Task<ProjectItem> UpdateItem(UpdateProjectItemCommand command)
         {
-            ProjectItem existingItem = await _context.ProjectItems.FindAsync(id);
+            ProjectItem existingItem = await _context.ProjectItems.FindAsync(command.Id);
             if (existingItem == null)
-                throw new ArgumentOutOfRangeException(nameof(id));
+                throw new ArgumentOutOfRangeException(nameof(command.Id));
 
             existingItem.Name = command.Name;
             existingItem.Description = command.Description;
