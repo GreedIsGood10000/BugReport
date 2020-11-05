@@ -39,7 +39,7 @@ namespace BugReport.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TaskItem>>> ReadItems(
+        public async Task<ActionResult<IEnumerable<TaskItem>>> GetItems(
             [FromQuery(Name = "sortorder")] string sortOrder, 
             [FromQuery(Name = "projectid")] int[] projectId,
             [FromQuery(Name = "datefrom")] DateTime? dateFrom,
@@ -52,8 +52,19 @@ namespace BugReport.Controllers
         {
             try
             {
-                return await _taskRepository.GetTaskItems(sortOrder, projectId, dateFrom, dateTo, status, priority, page,
-                pageSize);
+                var command = new GetTasksCommand
+                {
+                    Priority = priority,
+                    PageSize = pageSize,
+                    Status = status,
+                    Page = page,
+                    DateFrom = dateFrom,
+                    DateTo = dateTo,
+                    ProjectId = projectId,
+                    SortOrder = sortOrder
+                };
+
+                return await _taskRepository.GetTasks(command);
             }
             catch (Exception e)
             {
@@ -68,11 +79,11 @@ namespace BugReport.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<TaskItem>> ReadItem(int id)
+        public async Task<ActionResult<TaskItem>> GetItem(int id)
         {
             try
             {
-                TaskItem result = await _taskRepository.GetItem(id);
+                TaskItem result = await _taskRepository.GetTask(id);
 
                 if (result == null)
                     return NotFound();
@@ -104,7 +115,7 @@ namespace BugReport.Controllers
                     ProjectID = parameters.ProjectId
                 };
 
-                return await _taskRepository.CreateItem(command);
+                return await _taskRepository.CreateTask(command);
             }
             catch (Exception e)
             {
@@ -136,7 +147,7 @@ namespace BugReport.Controllers
                     Status = parameters.Status
                 };
 
-                return await _taskRepository.UpdateItem(command);
+                return await _taskRepository.UpdateTask(command);
             }
             catch (Exception e)
             {
@@ -155,7 +166,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                await _taskRepository.DeleteItem(id);
+                await _taskRepository.DeleteTask(id);
 
                 return NoContent();
             }

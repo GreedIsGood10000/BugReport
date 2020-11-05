@@ -17,20 +17,20 @@ namespace BugReport.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<ProjectItem>> GetProjectItems(ReadTasksCommand readTasksCommand)
+        public async Task<IEnumerable<ProjectItem>> GetProjects(GetProjectsCommand getProjectsCommand)
         {
             //используется пакет X.PagedList.Mvc.Core
-            var pagedList = await _context.ProjectItems.ToPagedListAsync(readTasksCommand.Page, readTasksCommand.PageSize);
+            var pagedList = await _context.ProjectItems.ToPagedListAsync(getProjectsCommand.Page, getProjectsCommand.PageSize);
 
             return await pagedList.ToListAsync();
         }
 
-        public Task<ProjectItem> GetItem(int id)
+        public Task<ProjectItem> GetProject(int id)
         {
             return _context.ProjectItems.FindAsync(id);
         }
 
-        public async Task<ProjectItem> CreateItem(CreateProjectItemCommand command)
+        public async Task<ProjectItem> CreateProject(CreateProjectItemCommand command)
         {
             ProjectItem projectItem = new ProjectItem
             {
@@ -47,7 +47,7 @@ namespace BugReport.Repositories
             return projectItem;
         }
 
-        public async Task<ProjectItem> UpdateItem(UpdateProjectItemCommand command)
+        public async Task<ProjectItem> UpdateProject(UpdateProjectItemCommand command)
         {
             ProjectItem existingItem = await _context.ProjectItems.FindAsync(command.Id);
             if (existingItem == null)
@@ -67,7 +67,7 @@ namespace BugReport.Repositories
             return existingItem;
         }
 
-        public async Task DeleteItem(int id)
+        public async Task DeleteProject(int id)
         {
             ProjectItem item = await _context.ProjectItems.FindAsync(id);
 

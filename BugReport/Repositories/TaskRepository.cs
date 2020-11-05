@@ -18,18 +18,11 @@ namespace BugReport.Repositories
             _context = context;
         }
 
-        public async Task<List<TaskItem>> GetTaskItems(string sortOrder,
-            int[] projectId,
-            DateTime? dateFrom,
-            DateTime? dateTo,
-            TaskItem.TaskStatus[] status,
-            TaskItem.TaskPriority[] priority,
-            int page,
-            int pageSize)
+        public async Task<List<TaskItem>> GetTasks(GetTasksCommand command)
         {
             IEnumerable<TaskItem> items = _context.TaskItems;
 
-            switch (sortOrder)
+            switch (command.SortOrder)
             {
                 case "priority":
                     items = items.OrderBy(x => x.Priority);
@@ -39,43 +32,43 @@ namespace BugReport.Repositories
                     break;
             }
 
-            if (projectId?.Length != 0)
+            if (command.ProjectId?.Length != 0)
             {
-                items = items.Where(x => projectId.Contains(x.ProjectID));
+                items = items.Where(x => command.ProjectId.Contains(x.ProjectID));
             }
 
-            if (status?.Length != 0)
+            if (command.Status?.Length != 0)
             {
-                items = items.Where(x => status.Contains(x.Status));
+                items = items.Where(x => command.Status.Contains(x.Status));
             }
 
-            if (priority?.Length != 0)
+            if (command.Priority?.Length != 0)
             {
-                items = items.Where(x => priority.Contains(x.Priority));
+                items = items.Where(x => command.Priority.Contains(x.Priority));
             }
 
-            if (dateFrom != null)
+            if (command.DateFrom != null)
             {
-                items = items.Where(x => x.Created >= dateFrom);
+                items = items.Where(x => x.Created >= command.DateFrom);
             }
 
-            if (dateTo != null)
+            if (command.DateTo != null)
             {
-                items = items.Where(x => x.Created <= dateTo);
+                items = items.Where(x => x.Created <= command.DateTo);
             }
 
             //используется пакет X.PagedList.Mvc.Core
-            var itemsPagedList = await items.ToPagedListAsync(page, pageSize);
+            var itemsPagedList = await items.ToPagedListAsync(command.Page, command.PageSize);
 
             return await itemsPagedList.ToListAsync();
         }
 
-        public Task<TaskItem> GetItem(int id)
+        public Task<TaskItem> GetTask(int id)
         {
             return _context.TaskItems.FindAsync(id);
         }
 
-        public async Task<TaskItem> CreateItem(CreateTaskItemCommand command)
+        public async Task<TaskItem> CreateTask(CreateTaskItemCommand command)
         {
             TaskItem taskItem = new TaskItem
             {
@@ -95,7 +88,7 @@ namespace BugReport.Repositories
             return taskItem;
         }
 
-        public async Task<TaskItem> UpdateItem(UpdateTaskItemCommand command)
+        public async Task<TaskItem> UpdateTask(UpdateTaskItemCommand command)
         {
             TaskItem existingItem = await _context.TaskItems.FindAsync(command.Id);
             if (existingItem == null)
@@ -118,7 +111,7 @@ namespace BugReport.Repositories
             return existingItem;
         }
 
-        public async Task DeleteItem(int id)
+        public async Task DeleteTask(int id)
         {
             TaskItem item = await _context.TaskItems.FindAsync(id);
 

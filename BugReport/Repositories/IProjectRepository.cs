@@ -7,14 +7,14 @@ namespace BugReport.Repositories
 {
     public interface IProjectRepository
     {
-        Task<IEnumerable<ProjectItem>> GetProjectItems(ReadTasksCommand readTasksCommand);
+        Task<IEnumerable<ProjectItem>> GetProjects(GetProjectsCommand getProjectsCommand);
 
-        Task<ProjectItem> GetItem(int id);
+        Task<ProjectItem> GetProject(int id);
 
-        Task<ProjectItem> CreateItem(CreateProjectItemCommand command);
+        Task<ProjectItem> CreateProject(CreateProjectItemCommand command);
 
-        Task<ProjectItem> UpdateItem(UpdateProjectItemCommand command);
+        Task<ProjectItem> UpdateProject(UpdateProjectItemCommand command);
 
-        Task DeleteItem(int id);
+        Task DeleteProject(int id);
     }
 }

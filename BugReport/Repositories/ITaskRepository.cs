@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BugReport.Commands;
 using BugReport.Models;
@@ -8,21 +7,14 @@ namespace BugReport.Repositories
 {
     public interface ITaskRepository
     {
-        Task<List<TaskItem>> GetTaskItems(string sortOrder,
-            int[] projectId,
-            DateTime? dateFrom,
-            DateTime? dateTo,
-            TaskItem.TaskStatus[] status,
-            TaskItem.TaskPriority[] priority,
-            int page,
-            int pageSize);
+        Task<List<TaskItem>> GetTasks(GetTasksCommand command);
 
-        Task<TaskItem> GetItem(int id);
+        Task<TaskItem> GetTask(int id);
 
-        Task<TaskItem> CreateItem(CreateTaskItemCommand command);
+        Task<TaskItem> CreateTask(CreateTaskItemCommand command);
 
-        Task<TaskItem> UpdateItem(UpdateTaskItemCommand command);
+        Task<TaskItem> UpdateTask(UpdateTaskItemCommand command);
 
-        Task DeleteItem(int id);
+        Task DeleteTask(int id);
     }
 }

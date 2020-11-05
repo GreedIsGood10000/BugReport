@@ -2,7 +2,7 @@
 
 namespace BugReport.Commands
 {
-    public class ReadTasksCommand
+    public class GetProjectsCommand
     {
         private const int DEFAULT_PAGE_SIZE = 30;
         private const int DEFAULT_PAGE_NUMBER = 1;

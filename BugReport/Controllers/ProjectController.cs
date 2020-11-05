@@ -41,13 +41,13 @@ namespace BugReport.Controllers
         {
             try
             {
-                var readTasksCommand = new ReadTasksCommand
+                var readTasksCommand = new GetProjectsCommand
                 {
                     Page = page,
                     PageSize = pageSize
                 };
 
-                var item = await _projectRepository.GetProjectItems(readTasksCommand);
+                var item = await _projectRepository.GetProjects(readTasksCommand);
 
                 return Ok(item);
             }
@@ -68,7 +68,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                ProjectItem result = await _projectRepository.GetItem(id);
+                ProjectItem result = await _projectRepository.GetProject(id);
 
                 if (result == null)
                     return NotFound();
@@ -98,7 +98,7 @@ namespace BugReport.Controllers
                     Description = parameters.Description
                 };
 
-                ProjectItem projectItem = await _projectRepository.CreateItem(command);
+                ProjectItem projectItem = await _projectRepository.CreateProject(command);
 
                 return projectItem;
             }
@@ -129,7 +129,7 @@ namespace BugReport.Controllers
                     Description = parameters.Description
                 };
 
-                return await _projectRepository.UpdateItem(command);
+                return await _projectRepository.UpdateProject(command);
             }
             catch (Exception e)
             {
@@ -149,7 +149,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                await _projectRepository.DeleteItem(id);
+                await _projectRepository.DeleteProject(id);
 
                 return NoContent();
             }
