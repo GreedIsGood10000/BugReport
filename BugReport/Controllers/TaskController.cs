@@ -83,7 +83,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                TaskItem result = await _taskRepository.GetTask(id);
+                var result = await _taskRepository.GetTask(id);
 
                 if (result == null)
                     return NotFound();

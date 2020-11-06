@@ -68,7 +68,7 @@ namespace BugReport.Controllers
         {
             try
             {
-                ProjectItem result = await _projectRepository.GetProject(id);
+                var result = await _projectRepository.GetProject(id);
 
                 if (result == null)
                     return NotFound();

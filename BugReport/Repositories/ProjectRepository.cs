@@ -32,7 +32,7 @@ namespace BugReport.Repositories
 
         public async Task<ProjectItem> CreateProject(CreateProjectItemCommand command)
         {
-            ProjectItem projectItem = new ProjectItem
+            var projectItem = new ProjectItem
             {
                 Created = DateTime.UtcNow,
                 Description = command.Description,
@@ -49,7 +49,7 @@ namespace BugReport.Repositories
 
         public async Task<ProjectItem> UpdateProject(UpdateProjectItemCommand command)
         {
-            ProjectItem existingItem = await _context.ProjectItems.FindAsync(command.Id);
+            var existingItem = await _context.ProjectItems.FindAsync(command.Id);
             if (existingItem == null)
                 throw new ArgumentOutOfRangeException(nameof(command.Id));
 
@@ -69,7 +69,7 @@ namespace BugReport.Repositories
 
         public async Task DeleteProject(int id)
         {
-            ProjectItem item = await _context.ProjectItems.FindAsync(id);
+            var item = await _context.ProjectItems.FindAsync(id);
 
             if (item == null)
             {

@@ -70,7 +70,7 @@ namespace BugReport.Repositories
 
         public async Task<TaskItem> CreateTask(CreateTaskItemCommand command)
         {
-            TaskItem taskItem = new TaskItem
+            var taskItem = new TaskItem
             {
                 Created = DateTime.UtcNow,
                 Modified = DateTime.UtcNow,
@@ -90,7 +90,7 @@ namespace BugReport.Repositories
 
         public async Task<TaskItem> UpdateTask(UpdateTaskItemCommand command)
         {
-            TaskItem existingItem = await _context.TaskItems.FindAsync(command.Id);
+            var existingItem = await _context.TaskItems.FindAsync(command.Id);
             if (existingItem == null)
                 throw new ArgumentOutOfRangeException(nameof(command.Id));
 
@@ -113,7 +113,7 @@ namespace BugReport.Repositories
 
         public async Task DeleteTask(int id)
         {
-            TaskItem item = await _context.TaskItems.FindAsync(id);
+            var item = await _context.TaskItems.FindAsync(id);
 
             if (item == null)
                 return;
